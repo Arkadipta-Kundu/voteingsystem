@@ -26,6 +26,7 @@
                     <input type="text" class="form-control mb-2" placeholder="Option 2" id="option2" required>
                 </div>
                 <button type="button" class="btn btn-secondary mb-3" onclick="addOption()">Add another option</button>
+                <br>
                 <button type="submit" class="btn btn-primary">Create Poll</button>
             </form>
         </div>
@@ -109,7 +110,7 @@
         // Logout function
         function logout() {
             localStorage.removeItem('loggedInUser');
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
     </script>
 

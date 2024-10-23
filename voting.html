@@ -20,7 +20,7 @@
             <h4>Active Polls</h4>
             <form id="voteForm">
                 <div id="polls" class="mt-3"></div>
-                <button type="submit" class="btn btn-primary mt-4">Submit Vote</button>
+                <button id="submitBtn" type="submit" class="btn btn-primary mt-4">Submit Vote</button>
             </form>
         </div>
         <div class="text-center mt-5">
@@ -51,6 +51,7 @@
 
             if (availablePolls.length === 0) {
                 pollsHTML = '<p>No available polls to vote on!</p>';
+                document.getElementById('submitBtn').style.display = 'none';  // Hide submit button if no polls
             } else {
                 availablePolls.forEach(poll => {
                     pollsHTML += `<div class="card mb-4">
@@ -67,6 +68,7 @@
 
                     pollsHTML += `</div></div>`;
                 });
+                document.getElementById('submitBtn').style.display = 'block';  // Show submit button if polls exist
             }
 
             document.getElementById('polls').innerHTML = pollsHTML;
@@ -81,26 +83,26 @@
             const polls = JSON.parse(localStorage.getItem('polls')) || [];
             const userVotedPolls = JSON.parse(localStorage.getItem(`votedPolls-${loggedInUser.userId}`)) || [];
 
-            let votedPollId = null;
+            let votedPollIds = [];  // Track multiple polls voted on
 
             polls.forEach(poll => {
                 const selectedOption = document.querySelector(`input[name="poll-${poll.pollId}"]:checked`);
                 if (selectedOption) {
                     poll.votes[selectedOption.value]++;
-                    votedPollId = poll.pollId;  // Track which poll was voted on
+                    votedPollIds.push(poll.pollId);  // Track all polls the user voted on
                 }
             });
 
-            if (votedPollId !== null) {
+            if (votedPollIds.length > 0) {
                 // Store the updated votes in localStorage
                 localStorage.setItem('polls', JSON.stringify(polls));
 
-                // Add the voted pollId to the user's votedPolls list
-                userVotedPolls.push(votedPollId);
-                localStorage.setItem(`votedPolls-${loggedInUser.userId}`, JSON.stringify(userVotedPolls));
+                // Add all voted pollIds to the user's votedPolls list
+                const updatedVotedPolls = [...userVotedPolls, ...votedPollIds];
+                localStorage.setItem(`votedPolls-${loggedInUser.userId}`, JSON.stringify(updatedVotedPolls));
 
-                alert('Your vote has been submitted successfully!');
-                displayPolls();  // Refresh the polls to hide the voted poll
+                alert('Your votes have been submitted successfully!');
+                displayPolls();  // Refresh the polls to hide the voted polls
             } else {
                 alert('Please select an option to vote.');
             }
@@ -109,7 +111,7 @@
         // Logout function
         function logout() {
             localStorage.removeItem('loggedInUser');
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
     </script>
 </body>
