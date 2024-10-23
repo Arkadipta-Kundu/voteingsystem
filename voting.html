@@ -29,7 +29,7 @@
     </div>
 
     <script>
-        // Fetch logged in user info
+        // Fetch logged-in user info
         const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
 
         if (!loggedInUser) {
@@ -41,15 +41,18 @@
         document.getElementById('fullName').textContent = loggedInUser.fullName;
         document.getElementById('voterId').textContent = loggedInUser.voterId;
 
-        // Fetch and display polls
+        // Fetch and display polls, filtering out those the user has already voted on
         function displayPolls() {
             const polls = JSON.parse(localStorage.getItem('polls')) || [];
+            const userVotedPolls = JSON.parse(localStorage.getItem(`votedPolls-${loggedInUser.userId}`)) || [];
             let pollsHTML = '';
 
-            if (polls.length === 0) {
-                pollsHTML = '<p>No active polls to vote on!</p>';
+            const availablePolls = polls.filter(poll => !userVotedPolls.includes(poll.pollId));  // Filter polls
+
+            if (availablePolls.length === 0) {
+                pollsHTML = '<p>No available polls to vote on!</p>';
             } else {
-                polls.forEach(poll => {
+                availablePolls.forEach(poll => {
                     pollsHTML += `<div class="card mb-4">
                         <div class="card-header">${poll.pollTitle}</div>
                         <div class="card-body">`;
@@ -76,16 +79,31 @@
             event.preventDefault();
 
             const polls = JSON.parse(localStorage.getItem('polls')) || [];
+            const userVotedPolls = JSON.parse(localStorage.getItem(`votedPolls-${loggedInUser.userId}`)) || [];
+
+            let votedPollId = null;
+
             polls.forEach(poll => {
                 const selectedOption = document.querySelector(`input[name="poll-${poll.pollId}"]:checked`);
                 if (selectedOption) {
                     poll.votes[selectedOption.value]++;
+                    votedPollId = poll.pollId;  // Track which poll was voted on
                 }
             });
 
-            localStorage.setItem('polls', JSON.stringify(polls));
-            alert('Your vote has been submitted successfully!');
-            window.location.href = 'index.html';  // Redirect to results page
+            if (votedPollId !== null) {
+                // Store the updated votes in localStorage
+                localStorage.setItem('polls', JSON.stringify(polls));
+
+                // Add the voted pollId to the user's votedPolls list
+                userVotedPolls.push(votedPollId);
+                localStorage.setItem(`votedPolls-${loggedInUser.userId}`, JSON.stringify(userVotedPolls));
+
+                alert('Your vote has been submitted successfully!');
+                displayPolls();  // Refresh the polls to hide the voted poll
+            } else {
+                alert('Please select an option to vote.');
+            }
         });
 
         // Logout function
