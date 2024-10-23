@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Voting System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Admin Panel</h2>
+
+        <!-- Create Poll Section -->
+        <div class="mt-5">
+            <h4>Create a New Poll</h4>
+            <form id="createPollForm">
+                <div class="mb-3">
+                    <label for="pollTitle" class="form-label">Poll Title</label>
+                    <input type="text" class="form-control" id="pollTitle" required>
+                </div>
+                <div id="pollOptions" class="mb-3">
+                    <label for="option1" class="form-label">Poll Options</label>
+                    <input type="text" class="form-control mb-2" placeholder="Option 1" id="option1" required>
+                    <input type="text" class="form-control mb-2" placeholder="Option 2" id="option2" required>
+                </div>
+                <button type="button" class="btn btn-secondary mb-3" onclick="addOption()">Add another option</button>
+                <button type="submit" class="btn btn-primary">Create Poll</button>
+            </form>
+        </div>
+
+        <!-- Manage Polls Section -->
+        <div class="mt-5">
+            <h4>Existing Polls</h4>
+            <div id="pollList"></div>
+        </div>
+
+        <div class="text-center mt-5">
+            <button onclick="logout()" class="btn btn-danger">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        // Check if the admin is logged in by verifying if the userId is 'admin'
+        const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+
+        // Ensure user is logged in and is the admin
+        if (!loggedInUser || loggedInUser.userId !== 'admin') {
+            alert('Unauthorized access!');
+            window.location.href = 'login.html';  // Redirect to login page
+        }
+
+        // Add more options to the poll creation form
+        function addOption() {
+            const optionCount = document.querySelectorAll('#pollOptions input').length + 1;
+            const optionInput = `<input type="text" class="form-control mb-2" placeholder="Option ${optionCount}" required>`;
+            document.getElementById('pollOptions').insertAdjacentHTML('beforeend', optionInput);
+        }
+
+        // Create poll and store in localStorage
+        document.getElementById('createPollForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const pollTitle = document.getElementById('pollTitle').value;
+            const options = Array.from(document.querySelectorAll('#pollOptions input')).map(input => input.value);
+
+            const polls = JSON.parse(localStorage.getItem('polls')) || [];
+            const pollId = polls.length + 1;
+            const newPoll = { pollId, pollTitle, options, votes: Array(options.length).fill(0) };
+            polls.push(newPoll);
+
+            localStorage.setItem('polls', JSON.stringify(polls));
+            alert('Poll created successfully!');
+            displayPolls();
+        });
+
+        // Display existing polls
+        function displayPolls() {
+            const polls = JSON.parse(localStorage.getItem('polls')) || [];
+            let pollListHTML = '';
+
+            if (polls.length === 0) {
+                pollListHTML = '<p>No polls available.</p>';
+            } else {
+                polls.forEach(poll => {
+                    pollListHTML += `<div class="card mb-4">
+                        <div class="card-header">${poll.pollTitle}</div>
+                        <div class="card-body">
+                            <button class="btn btn-danger" onclick="deletePoll(${poll.pollId})">Delete Poll</button>
+                        </div></div>`;
+                });
+            }
+
+            document.getElementById('pollList').innerHTML = pollListHTML;
+        }
+
+        // Delete poll from localStorage
+        function deletePoll(pollId) {
+            const polls = JSON.parse(localStorage.getItem('polls')) || [];
+            const updatedPolls = polls.filter(poll => poll.pollId !== pollId);
+            localStorage.setItem('polls', JSON.stringify(updatedPolls));
+            displayPolls();
+        }
+
+        // Initial display of polls
+        displayPolls();
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('loggedInUser');
+            window.location.href = 'login.html';
+        }
+    </script>
+
+</body>
+
+</html>

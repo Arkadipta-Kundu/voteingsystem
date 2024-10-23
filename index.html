@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting System - Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Current Voting Results</h1>
+        <div id="polls-results" class="mt-4"></div>
+        <div class="text-center mt-5">
+            <a href="login.html" class="btn btn-primary">Login</a>
+            <a href="register.html" class="btn btn-secondary">Register</a>
+        </div>
+    </div>
+
+    <script>
+        // Fetch active polls and display results
+        function fetchPollResults() {
+            const polls = JSON.parse(localStorage.getItem('polls')) || [];
+            let resultHTML = '';
+
+            if (polls.length === 0) {
+                resultHTML = '<p>No active polls right now!</p>';
+            } else {
+                polls.forEach(poll => {
+                    resultHTML += `<div class="card mb-4">
+                        <div class="card-header">${poll.pollTitle}</div>
+                        <div class="card-body">`;
+
+                    poll.options.forEach((option, index) => {
+                        const totalVotes = poll.votes.reduce((acc, vote) => acc + vote, 0);
+                        const percentage = totalVotes ? Math.round((poll.votes[index] / totalVotes) * 100) : 0;
+                        resultHTML += `<p>${option}: ${poll.votes[index]} votes (${percentage}%)</p>`;
+                    });
+
+                    resultHTML += `</div></div>`;
+                });
+            }
+
+            document.getElementById('polls-results').innerHTML = resultHTML;
+        }
+
+        // Load results on page load
+        window.onload = fetchPollResults;
+    </script>
+</body>
+
+</html>
