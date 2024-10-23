@@ -37,6 +37,12 @@
             <div id="pollList"></div>
         </div>
 
+        <!-- Manage Users Section -->
+        <div class="mt-5">
+            <h4>Registered Users</h4>
+            <div id="userList"></div>
+        </div>
+
         <div class="text-center mt-5">
             <button onclick="logout()" class="btn btn-danger">Logout</button>
         </div>
@@ -104,8 +110,55 @@
             displayPolls();
         }
 
-        // Initial display of polls
+        // Display registered users
+        function displayUsers() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            let userListHTML = '';
+
+            if (users.length === 0) {
+                userListHTML = '<p>No registered users.</p>';
+            } else {
+                users.forEach(user => {
+                    userListHTML += `<div class="card mb-3">
+                        <div class="card-header">${user.fullName} (Voter ID: ${user.voterId})</div>
+                        <div class="card-body">
+                            <button class="btn btn-warning" onclick="editUser('${user.userId}')">Edit Name</button>
+                            <button class="btn btn-danger" onclick="deleteUser('${user.userId}')">Delete User</button>
+                        </div></div>`;
+                });
+            }
+
+            document.getElementById('userList').innerHTML = userListHTML;
+        }
+
+        // Edit user name
+        function editUser(userId) {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.userId === userId);
+            const newName = prompt('Enter new name for the user:', user.fullName);
+
+            if (newName && newName.trim() !== '') {
+                user.fullName = newName.trim();
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('User name updated successfully!');
+                displayUsers();  // Refresh user list
+            } else {
+                alert('Invalid name entered.');
+            }
+        }
+
+        // Delete user from localStorage
+        function deleteUser(userId) {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const updatedUsers = users.filter(u => u.userId !== userId);
+            localStorage.setItem('users', JSON.stringify(updatedUsers));
+            alert('User deleted successfully!');
+            displayUsers();  // Refresh user list
+        }
+
+        // Initial display of polls and users
         displayPolls();
+        displayUsers();
 
         // Logout function
         function logout() {
