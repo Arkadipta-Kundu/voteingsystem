@@ -37,6 +37,12 @@
             <div id="pollList"></div>
         </div>
 
+        <!-- Active Requests Section -->
+        <div class="mt-5">
+            <h4>Active Requests</h4>
+            <div id="accountRequests"></div>
+        </div>
+
         <!-- Manage Users Section -->
         <div class="mt-5">
             <h4>Registered Users</h4>
@@ -110,6 +116,64 @@
             displayPolls();
         }
 
+        // Display active account requests
+        function displayAccountRequests() {
+            const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
+            let requestHTML = '';
+
+            if (accountRequests.length === 0) {
+                requestHTML = '<p>No active requests.</p>';
+            } else {
+                accountRequests.forEach((request, index) => {
+                    requestHTML += `<div class="card mb-4">
+                        <div class="card-header">${request.fullName} (${request.userId})</div>
+                        <div class="card-body">
+                            <p>Voter ID: ${request.voterId}</p>
+                            <button class="btn btn-success" onclick="approveRequest(${index})">Approve</button>
+                            <button class="btn btn-danger" onclick="rejectRequest(${index})">Reject</button>
+                        </div></div>`;
+                });
+            }
+
+            document.getElementById('accountRequests').innerHTML = requestHTML;
+        }
+
+        // Approve a registration request
+        function approveRequest(index) {
+            const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
+            const requestToApprove = accountRequests[index];
+
+            // Update the request status
+            requestToApprove.status = 'Approved';
+            const approvedRequests = JSON.parse(localStorage.getItem('approvedRequests')) || [];
+            approvedRequests.push(requestToApprove); // Keep a record of approved requests
+            localStorage.setItem('approvedRequests', JSON.stringify(approvedRequests));
+
+            // Remove the request from the active requests
+            accountRequests.splice(index, 1);
+            localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
+
+            alert('Account successfully created.');
+            displayAccountRequests();
+        }
+
+        // Reject a registration request
+        function rejectRequest(index) {
+            const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
+            const requestToReject = accountRequests[index];
+
+            // Update the request status
+            requestToReject.status = 'Rejected';
+            localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
+
+            // Remove the request from the active requests
+            accountRequests.splice(index, 1);
+            localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
+
+            alert('Request rejected.');
+            displayAccountRequests();
+        }
+
         // Display registered users
         function displayUsers() {
             const users = JSON.parse(localStorage.getItem('users')) || [];
@@ -156,8 +220,9 @@
             displayUsers();  // Refresh user list
         }
 
-        // Initial display of polls and users
+        // Initial display of polls, requests, and users
         displayPolls();
+        displayAccountRequests();
         displayUsers();
 
         // Logout function

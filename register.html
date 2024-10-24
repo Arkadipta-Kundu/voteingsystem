@@ -1,3 +1,4 @@
+<!-- Updated Register Page -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +11,7 @@
 
 <body>
     <div class="container mt-5">
-        <h2 class="text-center">Register to Vote</h2>
+        <h2 class="text-center">Register</h2>
         <form id="registerForm" class="mt-4">
             <div class="mb-3">
                 <label for="fullName" class="form-label">Full Name</label>
@@ -28,37 +29,32 @@
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" required>
             </div>
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="btn btn-primary">Submit Request</button>
         </form>
-        <div class="text-center mt-3">
-            <a href="login.html">Already have an account? Login here</a>
-        </div>
     </div>
 
     <script>
         document.getElementById('registerForm').addEventListener('submit', function (event) {
-            event.preventDefault();
+                event.preventDefault();
 
-            const fullName = document.getElementById('fullName').value;
-            const voterId = document.getElementById('voterId').value;
-            const userId = document.getElementById('userId').value;
-            const password = document.getElementById('password').value;
+                const fullName = document.getElementById('fullName').value;
+                const voterId = document.getElementById('voterId').value;
+                const userId = document.getElementById('userId').value;
+                const password = document.getElementById('password').value;
 
-            const users = JSON.parse(localStorage.getItem('users')) || [];
+                // Generate a random 4-character alphanumeric ID for the request
+                const requestId = Math.random().toString(36).substring(2, 6);
 
-            // Check if voterId or userId already exists
-            if (users.some(user => user.voterId === voterId || user.userId === userId)) {
-                alert('Voter ID or User ID already exists!');
-                return;
-            }
+                const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
 
-            const newUser = { fullName, voterId, userId, password };
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
+                // Push the new request to accountRequests with the requestId
+                accountRequests.push({ fullName, voterId, userId, password, requestId });
+                localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
 
-            alert('Registration successful! Please login.');
-            window.location.href = 'login.html';
-        });
+                alert(`Account request submitted. Your Request ID is: ${requestId}`);
+                window.location.href = 'login.html';
+            });
+
     </script>
 </body>
 
