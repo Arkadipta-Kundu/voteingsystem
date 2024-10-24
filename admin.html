@@ -139,23 +139,41 @@
         }
 
         // Approve a registration request
-        function approveRequest(index) {
-            const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
-            const requestToApprove = accountRequests[index];
+            function approveRequest(index) {
+                const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
+                const requestToApprove = accountRequests[index];
 
-            // Update the request status
-            requestToApprove.status = 'Approved';
-            const approvedRequests = JSON.parse(localStorage.getItem('approvedRequests')) || [];
-            approvedRequests.push(requestToApprove); // Keep a record of approved requests
-            localStorage.setItem('approvedRequests', JSON.stringify(approvedRequests));
+                // Update the request status
+                requestToApprove.status = 'Approved';
 
-            // Remove the request from the active requests
-            accountRequests.splice(index, 1);
-            localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
+                // Create user object and add to users array
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const newUser = {
+                    fullName: requestToApprove.fullName,
+                    voterId: requestToApprove.voterId,
+                    userId: requestToApprove.userId,
+                    password: requestToApprove.password, // Ensure you have the password stored in the request
+                    requestId: requestToApprove.requestId // Optional: Track the request ID if needed
+                };
+                users.push(newUser); // Add the new user to the users array
 
-            alert('Account successfully created.');
-            displayAccountRequests();
-        }
+                // Store updated users list
+                localStorage.setItem('users', JSON.stringify(users));
+
+                // Keep a record of approved requests
+                const approvedRequests = JSON.parse(localStorage.getItem('approvedRequests')) || [];
+                approvedRequests.push(requestToApprove);
+                localStorage.setItem('approvedRequests', JSON.stringify(approvedRequests));
+
+                // Remove the request from the active requests
+                accountRequests.splice(index, 1);
+                localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
+
+                alert('Account successfully created.');
+                displayAccountRequests();
+                displayUsers(); // Refresh user list to show the new user
+            }
+
 
         // Reject a registration request
         function rejectRequest(index) {
