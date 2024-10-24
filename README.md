@@ -4,7 +4,7 @@
 
 The **Online Voting System** is a web-based application designed to facilitate online polls and voting. This system allows users to register, log in, vote on polls, and view voting results. Admin users can manage polls and registered users, including creating, deleting polls, and editing user information. The application leverages HTML, CSS, and JavaScript with data stored in the browser's local storage.
 
-![Voting System Screenshot](images/screenshot.png)
+![Voting System Screenshot](images/ss1.png)
 
 ## Features
 

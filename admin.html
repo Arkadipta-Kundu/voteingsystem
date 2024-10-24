@@ -6,50 +6,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Voting System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h2,
+        h4 {
+            color: #343a40;
+        }
+
+        .container {
+            max-width: 800px;
+        }
+
+        .card-header {
+            font-weight: bold;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-primary {
+            background-color: #0d6efd;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container mt-5">
-        <h2 class="text-center">Admin Panel</h2>
+        <h2 class="text-center mb-4">Admin Panel</h2>
 
         <!-- Create Poll Section -->
-        <div class="mt-5">
-            <h4>Create a New Poll</h4>
-            <form id="createPollForm">
-                <div class="mb-3">
-                    <label for="pollTitle" class="form-label">Poll Title</label>
-                    <input type="text" class="form-control" id="pollTitle" required>
-                </div>
-                <div id="pollOptions" class="mb-3">
-                    <label for="option1" class="form-label">Poll Options</label>
-                    <input type="text" class="form-control mb-2" placeholder="Option 1" id="option1" required>
-                    <input type="text" class="form-control mb-2" placeholder="Option 2" id="option2" required>
-                </div>
-                <button type="button" class="btn btn-secondary mb-3" onclick="addOption()">Add another option</button>
-                <br>
-                <button type="submit" class="btn btn-primary">Create Poll</button>
-            </form>
+        <div class="card mb-5 shadow-sm">
+            <div class="card-body">
+                <h4>Create a New Poll</h4>
+                <form id="createPollForm" class="mt-3">
+                    <div class="mb-3">
+                        <label for="pollTitle" class="form-label">Poll Title</label>
+                        <input type="text" class="form-control" id="pollTitle" placeholder="Enter poll title" required>
+                    </div>
+                    <div id="pollOptions" class="mb-3">
+                        <label for="option1" class="form-label">Poll Options</label>
+                        <input type="text" class="form-control mb-2" placeholder="Option 1" id="option1" required>
+                        <input type="text" class="form-control mb-2" placeholder="Option 2" id="option2" required>
+                    </div>
+                    <button type="button" class="btn btn-secondary mb-3" onclick="addOption()">Add another
+                        option</button>
+                    <br>
+                    <button type="submit" class="btn btn-primary">Create Poll</button>
+                </form>
+            </div>
         </div>
 
         <!-- Manage Polls Section -->
-        <div class="mt-5">
-            <h4>Existing Polls</h4>
-            <div id="pollList"></div>
+        <div class="card mb-5 shadow-sm">
+            <div class="card-body">
+                <h4>Existing Polls</h4>
+                <div id="pollList" class="mt-3"></div>
+            </div>
         </div>
 
         <!-- Active Requests Section -->
-        <div class="mt-5">
-            <h4>Active Requests</h4>
-            <div id="accountRequests"></div>
+        <div class="card mb-5 shadow-sm">
+            <div class="card-body">
+                <h4>Active Requests</h4>
+                <div id="accountRequests" class="mt-3"></div>
+            </div>
         </div>
 
         <!-- Manage Users Section -->
-        <div class="mt-5">
-            <h4>Registered Users</h4>
-            <div id="userList"></div>
+        <div class="card mb-5 shadow-sm">
+            <div class="card-body">
+                <h4>Registered Users</h4>
+                <div id="userList" class="mt-3"></div>
+            </div>
         </div>
 
-        <div class="text-center mt-5">
+        <!-- Logout Button -->
+        <div class="text-center mt-4">
             <button onclick="logout()" class="btn btn-danger">Logout</button>
         </div>
     </div>
@@ -98,10 +142,10 @@
             } else {
                 polls.forEach(poll => {
                     pollListHTML += `<div class="card mb-4">
-                        <div class="card-header">${poll.pollTitle}</div>
-                        <div class="card-body">
-                            <button class="btn btn-danger" onclick="deletePoll(${poll.pollId})">Delete Poll</button>
-                        </div></div>`;
+                            <div class="card-header">${poll.pollTitle}</div>
+                            <div class="card-body">
+                                <button class="btn btn-danger" onclick="deletePoll(${poll.pollId})">Delete Poll</button>
+                            </div></div>`;
                 });
             }
 
@@ -126,12 +170,12 @@
             } else {
                 accountRequests.forEach((request, index) => {
                     requestHTML += `<div class="card mb-4">
-                        <div class="card-header">${request.fullName} (${request.userId})</div>
-                        <div class="card-body">
-                            <p>Voter ID: ${request.voterId}</p>
-                            <button class="btn btn-success" onclick="approveRequest(${index})">Approve</button>
-                            <button class="btn btn-danger" onclick="rejectRequest(${index})">Reject</button>
-                        </div></div>`;
+                            <div class="card-header">${request.fullName} (${request.userId})</div>
+                            <div class="card-body">
+                                <p>Voter ID: ${request.voterId}</p>
+                                <button class="btn btn-success" onclick="approveRequest(${index})">Approve</button>
+                                <button class="btn btn-danger" onclick="rejectRequest(${index})">Reject</button>
+                            </div></div>`;
                 });
             }
 
@@ -139,40 +183,40 @@
         }
 
         // Approve a registration request
-            function approveRequest(index) {
-                const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
-                const requestToApprove = accountRequests[index];
+        function approveRequest(index) {
+            const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
+            const requestToApprove = accountRequests[index];
 
-                // Update the request status
-                requestToApprove.status = 'Approved';
+            // Update the request status
+            requestToApprove.status = 'Approved';
 
-                // Create user object and add to users array
-                const users = JSON.parse(localStorage.getItem('users')) || [];
-                const newUser = {
-                    fullName: requestToApprove.fullName,
-                    voterId: requestToApprove.voterId,
-                    userId: requestToApprove.userId,
-                    password: requestToApprove.password, // Ensure you have the password stored in the request
-                    requestId: requestToApprove.requestId // Optional: Track the request ID if needed
-                };
-                users.push(newUser); // Add the new user to the users array
+            // Create user object and add to users array
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const newUser = {
+                fullName: requestToApprove.fullName,
+                voterId: requestToApprove.voterId,
+                userId: requestToApprove.userId,
+                password: requestToApprove.password, // Ensure you have the password stored in the request
+                requestId: requestToApprove.requestId // Optional: Track the request ID if needed
+            };
+            users.push(newUser); // Add the new user to the users array
 
-                // Store updated users list
-                localStorage.setItem('users', JSON.stringify(users));
+            // Store updated users list
+            localStorage.setItem('users', JSON.stringify(users));
 
-                // Keep a record of approved requests
-                const approvedRequests = JSON.parse(localStorage.getItem('approvedRequests')) || [];
-                approvedRequests.push(requestToApprove);
-                localStorage.setItem('approvedRequests', JSON.stringify(approvedRequests));
+            // Keep a record of approved requests
+            const approvedRequests = JSON.parse(localStorage.getItem('approvedRequests')) || [];
+            approvedRequests.push(requestToApprove);
+            localStorage.setItem('approvedRequests', JSON.stringify(approvedRequests));
 
-                // Remove the request from the active requests
-                accountRequests.splice(index, 1);
-                localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
+            // Remove the request from the active requests
+            accountRequests.splice(index, 1);
+            localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
 
-                alert('Account successfully created.');
-                displayAccountRequests();
-                displayUsers(); // Refresh user list to show the new user
-            }
+            alert('Account successfully created.');
+            displayAccountRequests();
+            displayUsers(); // Refresh user list to show the new user
+        }
 
 
         // Reject a registration request
@@ -202,11 +246,11 @@
             } else {
                 users.forEach(user => {
                     userListHTML += `<div class="card mb-3">
-                        <div class="card-header">${user.fullName} (Voter ID: ${user.voterId})</div>
-                        <div class="card-body">
-                            <button class="btn btn-warning" onclick="editUser('${user.userId}')">Edit Name</button>
-                            <button class="btn btn-danger" onclick="deleteUser('${user.userId}')">Delete User</button>
-                        </div></div>`;
+                            <div class="card-header">${user.fullName} (Voter ID: ${user.voterId})</div>
+                            <div class="card-body">
+                                <button class="btn btn-warning" onclick="editUser('${user.userId}')">Edit Name</button>
+                                <button class="btn btn-danger" onclick="deleteUser('${user.userId}')">Delete User</button>
+                            </div></div>`;
                 });
             }
 
@@ -249,7 +293,6 @@
             window.location.href = 'index.html';
         }
     </script>
-
 </body>
 
-</html>
+</html>y
