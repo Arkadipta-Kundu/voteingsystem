@@ -220,21 +220,24 @@
 
 
         // Reject a registration request
-        function rejectRequest(index) {
-            const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
-            const requestToReject = accountRequests[index];
+            function rejectRequest(index) {
+                const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
+                const requestToReject = accountRequests[index];
 
-            // Update the request status
-            requestToReject.status = 'Rejected';
-            localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
+                // Update the request status and store in rejectedRequests
+                requestToReject.status = 'Rejected';
+                const rejectedRequests = JSON.parse(localStorage.getItem('rejectedRequests')) || [];
+                rejectedRequests.push(requestToReject);
+                localStorage.setItem('rejectedRequests', JSON.stringify(rejectedRequests));
 
-            // Remove the request from the active requests
-            accountRequests.splice(index, 1);
-            localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
+                // Remove the request from the active requests
+                accountRequests.splice(index, 1);
+                localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
 
-            alert('Request rejected.');
-            displayAccountRequests();
-        }
+                alert('Request rejected.');
+                displayAccountRequests();
+            }
+
 
         // Display registered users
         function displayUsers() {
