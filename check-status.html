@@ -51,6 +51,11 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+        .status-invalid {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 
@@ -102,9 +107,9 @@
                     statusResult.innerHTML = `<p>Status: <strong>Approved</strong></p>`;
                     statusResult.classList.add('status-approved');
                 } else {
-                    // If the request ID is not found in either, it's considered rejected
-                    statusResult.innerHTML = `<p>Status: <strong>Rejected</strong></p>`;
-                    statusResult.classList.add('status-rejected');
+                    // If the request ID is not found in either, it's considered invalid
+                    statusResult.innerHTML = `<p>Status: <strong>Invalid Request ID</strong></p>`;
+                    statusResult.classList.add('status-invalid');
                 }
             }
         });
