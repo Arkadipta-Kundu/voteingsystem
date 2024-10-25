@@ -109,7 +109,17 @@
             const password = document.getElementById('password').value;
 
             const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
-            const requestId = 'REQ' + (accountRequests.length + 1).toString().padStart(4, '0');
+
+            function generateRequestId() {
+                const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                let result = '';
+                for (let i = 0; i < 8; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * characters.length));
+                }
+                return result;
+            }
+
+            const requestId = generateRequestId();
 
             accountRequests.push({ requestId, fullName, voterId, userId, password });
             localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
@@ -118,6 +128,7 @@
             window.location.href = 'check-status.html';
         });
     </script>
+
 </body>
 
 </html>
