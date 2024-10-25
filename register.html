@@ -109,7 +109,6 @@
             const password = document.getElementById('password').value;
 
             const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
-
             function generateRequestId() {
                 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
                 let result = '';
@@ -128,7 +127,6 @@
             window.location.href = 'check-status.html';
         });
     </script>
-
 </body>
 
 </html>
