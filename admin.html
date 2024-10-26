@@ -6,38 +6,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Voting System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f0f2f5;
+            font-family: 'Roboto', sans-serif;
         }
 
         h2,
         h4 {
-            color: #343a40;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .container {
             max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
         .card-header {
             font-weight: bold;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .btn {
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 14px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
         }
 
         .btn-secondary {
             background-color: #6c757d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
         }
 
         .btn-primary {
-            background-color: #0d6efd;
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
         }
 
         .btn-danger {
             background-color: #dc3545;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
         }
 
         .btn-warning {
             background-color: #ffc107;
+            border: none;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-5 {
+            margin-top: 3rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-5 {
+            margin-bottom: 3rem;
+        }
+
+        .shadow-sm {
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-control {
+            border-radius: 50px;
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .scrollable {
+            max-height: 300px;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -60,8 +154,7 @@
                         <input type="text" class="form-control mb-2" placeholder="Option 1" id="option1" required>
                         <input type="text" class="form-control mb-2" placeholder="Option 2" id="option2" required>
                     </div>
-                    <button type="button" class="btn btn-secondary mb-3" onclick="addOption()">Add another
-                        option</button>
+                    <button type="button" class="btn btn-secondary mb-3" onclick="addOption()">Add another option</button>
                     <br>
                     <button type="submit" class="btn btn-primary">Create Poll</button>
                 </form>
@@ -72,7 +165,7 @@
         <div class="card mb-5 shadow-sm">
             <div class="card-body">
                 <h4>Existing Polls</h4>
-                <div id="pollList" class="mt-3"></div>
+                <div id="pollList" class="mt-3 scrollable"></div>
             </div>
         </div>
 
@@ -80,7 +173,7 @@
         <div class="card mb-5 shadow-sm">
             <div class="card-body">
                 <h4>Active Requests</h4>
-                <div id="accountRequests" class="mt-3"></div>
+                <div id="accountRequests" class="mt-3 scrollable"></div>
             </div>
         </div>
 
@@ -88,12 +181,12 @@
         <div class="card mb-5 shadow-sm">
             <div class="card-body">
                 <h4>Registered Users</h4>
-                <div id="userList" class="mt-3"></div>
+                <div id="userList" class="mt-3 scrollable"></div>
             </div>
         </div>
 
         <!-- Logout Button -->
-        <div class="text-center mt-4">
+        <div class="text-center mt-4"></div>
             <button onclick="logout()" class="btn btn-danger">Logout</button>
         </div>
     </div>
@@ -134,31 +227,31 @@
 
         // Display existing polls
         function displayPolls() {
-            const polls = JSON.parse(localStorage.getItem('polls')) || [];
-            let pollListHTML = '';
+                const polls = JSON.parse(localStorage.getItem('polls')) || [];
+                let pollListHTML = '';
 
-            if (polls.length === 0) {
-                pollListHTML = '<p>No polls available.</p>';
-            } else {
-                polls.forEach(poll => {
-                    pollListHTML += `<div class="card mb-4">
-                            <div class="card-header">${poll.pollTitle}</div>
-                            <div class="card-body">
-                                <button class="btn btn-danger" onclick="deletePoll(${poll.pollId})">Delete Poll</button>
-                            </div></div>`;
-                });
+                if (polls.length === 0) {
+                    pollListHTML = '<p>No polls available.</p>';
+                } else {
+                    polls.forEach(poll => {
+                        pollListHTML += `<div class="card mb-4">
+                    <div class="card-header">${poll.pollTitle}</div>
+                    <div class="card-body">
+                        <button class="btn btn-danger" data-poll-id="${poll.pollId}" onclick="deletePoll(this.getAttribute('data-poll-id'))">Delete Poll</button>
+                    </div></div>`;
+                    });
+                }
+
+                document.getElementById('pollList').innerHTML = pollListHTML;
             }
-
-            document.getElementById('pollList').innerHTML = pollListHTML;
-        }
 
         // Delete poll from localStorage
         function deletePoll(pollId) {
-            const polls = JSON.parse(localStorage.getItem('polls')) || [];
-            const updatedPolls = polls.filter(poll => poll.pollId !== pollId);
-            localStorage.setItem('polls', JSON.stringify(updatedPolls));
-            displayPolls();
-        }
+                const polls = JSON.parse(localStorage.getItem('polls')) || [];
+                const updatedPolls = polls.filter(poll => Number(poll.pollId) !== Number(pollId));
+                localStorage.setItem('polls', JSON.stringify(updatedPolls));
+                displayPolls();
+            }
 
         // Display active account requests
         function displayAccountRequests() {
@@ -218,26 +311,24 @@
             displayUsers(); // Refresh user list to show the new user
         }
 
-
         // Reject a registration request
-            function rejectRequest(index) {
-                const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
-                const requestToReject = accountRequests[index];
+        function rejectRequest(index) {
+            const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
+            const requestToReject = accountRequests[index];
 
-                // Update the request status and store in rejectedRequests
-                requestToReject.status = 'Rejected';
-                const rejectedRequests = JSON.parse(localStorage.getItem('rejectedRequests')) || [];
-                rejectedRequests.push(requestToReject);
-                localStorage.setItem('rejectedRequests', JSON.stringify(rejectedRequests));
+            // Update the request status and store in rejectedRequests
+            requestToReject.status = 'Rejected';
+            const rejectedRequests = JSON.parse(localStorage.getItem('rejectedRequests')) || [];
+            rejectedRequests.push(requestToReject);
+            localStorage.setItem('rejectedRequests', JSON.stringify(rejectedRequests));
 
-                // Remove the request from the active requests
-                accountRequests.splice(index, 1);
-                localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
+            // Remove the request from the active requests
+            accountRequests.splice(index, 1);
+            localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
 
-                alert('Request rejected.');
-                displayAccountRequests();
-            }
-
+            alert('Request rejected.');
+            displayAccountRequests();
+        }
 
         // Display registered users
         function displayUsers() {
@@ -298,4 +389,4 @@
     </script>
 </body>
 
-</html>y
+</html>
