@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 
 const User = require('./models/User');
 const Poll = require('./models/Poll');
@@ -9,6 +10,9 @@ const Poll = require('./models/Poll');
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect('mongodb+srv://votingsystem:arka2002@votingplatform.prmhb.mongodb.net/?retryWrites=true&w=majority&appName=votingplatform', { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -48,6 +52,11 @@ app.post('/vote', async (req, res) => {
   } else {
     res.status(404).send('Poll not found');
   }
+});
+
+// Add a default route to handle the root URL
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(3000, () => {
