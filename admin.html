@@ -211,47 +211,59 @@
         // Create poll and store in localStorage
         document.getElementById('createPollForm').addEventListener('submit', function (event) {
             event.preventDefault();
-
             const pollTitle = document.getElementById('pollTitle').value;
             const options = Array.from(document.querySelectorAll('#pollOptions input')).map(input => input.value);
+            const poll = { pollId: Date.now(), pollTitle, options, votes: Array(options.length).fill(0) };
 
-            const polls = JSON.parse(localStorage.getItem('polls')) || [];
-            const pollId = polls.length + 1;
-            const newPoll = { pollId, pollTitle, options, votes: Array(options.length).fill(0) };
-            polls.push(newPoll);
-
-            localStorage.setItem('polls', JSON.stringify(polls));
-            alert('Poll created successfully!');
-            displayPolls();
+            fetch('https://your-deployed-server-url.com/createPoll', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(poll),
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    displayPolls();
+                })
+                .catch(error => console.error('Error:', error));
         });
 
         // Display existing polls
         function displayPolls() {
-                const polls = JSON.parse(localStorage.getItem('polls')) || [];
-                let pollListHTML = '';
-
-                if (polls.length === 0) {
-                    pollListHTML = '<p>No polls available.</p>';
-                } else {
-                    polls.forEach(poll => {
-                        pollListHTML += `<div class="card mb-4">
-                    <div class="card-header">${poll.pollTitle}</div>
-                    <div class="card-body">
-                        <button class="btn btn-danger" data-poll-id="${poll.pollId}" onclick="deletePoll(this.getAttribute('data-poll-id'))">Delete Poll</button>
-                    </div></div>`;
-                    });
-                }
-
-                document.getElementById('pollList').innerHTML = pollListHTML;
-            }
+            fetch('https://your-deployed-server-url.com/polls')
+                .then(response => response.json())
+                .then(polls => {
+                    let pollListHTML = '';
+                    if (polls.length === 0) {
+                        pollListHTML = '<p>No polls available.</p>';
+                    } else {
+                        polls.forEach(poll => {
+                            pollListHTML += `<div class="card mb-4">
+                                <div class="card-header">${poll.pollTitle}</div>
+                                <div class="card-body">
+                                    <button class="btn btn-danger" data-poll-id="${poll.pollId}" onclick="deletePoll(${poll.pollId})">Delete Poll</button>
+                                </div></div>`;
+                        });
+                    }
+                    document.getElementById('pollList').innerHTML = pollListHTML;
+                })
+                .catch(error => console.error('Error:', error));
+        }
 
         // Delete poll from localStorage
         function deletePoll(pollId) {
-                const polls = JSON.parse(localStorage.getItem('polls')) || [];
-                const updatedPolls = polls.filter(poll => Number(poll.pollId) !== Number(pollId));
-                localStorage.setItem('polls', JSON.stringify(updatedPolls));
-                displayPolls();
-            }
+            fetch(`https://your-deployed-server-url.com/deletePoll/${pollId}`, {
+                method: 'DELETE',
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    displayPolls();
+                })
+                .catch(error => console.error('Error:', error));
+        }
 
         // Display active account requests
         function displayAccountRequests() {

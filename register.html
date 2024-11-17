@@ -136,29 +136,23 @@
     <script>
         document.getElementById('registerForm').addEventListener('submit', function (event) {
             event.preventDefault();
+            const user = {
+                fullName: document.getElementById('fullName').value,
+                voterId: document.getElementById('voterId').value,
+                userId: document.getElementById('userId').value,
+                password: document.getElementById('password').value,
+            };
 
-            const fullName = document.getElementById('fullName').value;
-            const voterId = document.getElementById('voterId').value;
-            const userId = document.getElementById('userId').value;
-            const password = document.getElementById('password').value;
-
-            const accountRequests = JSON.parse(localStorage.getItem('accountRequests')) || [];
-            function generateRequestId() {
-                const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                let result = '';
-                for (let i = 0; i < 8; i++) {
-                    result += characters.charAt(Math.floor(Math.random() * characters.length));
-                }
-                return result;
-            }
-
-            const requestId = generateRequestId();
-
-            accountRequests.push({ requestId, fullName, voterId, userId, password });
-            localStorage.setItem('accountRequests', JSON.stringify(accountRequests));
-
-            alert('Your registration request has been submitted. Your Request ID is ' + requestId);
-            window.location.href = 'check-status.html';
+            fetch('https://your-deployed-server-url.com/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(user),
+            })
+                .then(response => response.text())
+                .then(data => alert(data))
+                .catch(error => console.error('Error:', error));
         });
     </script>
 </body>

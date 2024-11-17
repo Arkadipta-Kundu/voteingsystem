@@ -145,37 +145,30 @@
         document.getElementById('fullName').textContent = loggedInUser.fullName;
         document.getElementById('voterId').textContent = loggedInUser.voterId;
 
-        // Fetch and display polls, filtering out those the user has already voted on
+        // Fetch and display polls
         function displayPolls() {
-            const polls = JSON.parse(localStorage.getItem('polls')) || [];
-            const userVotedPolls = JSON.parse(localStorage.getItem(`votedPolls-${loggedInUser.userId}`)) || [];
-            let pollsHTML = '';
-
-            const availablePolls = polls.filter(poll => !userVotedPolls.includes(poll.pollId));  // Filter polls
-
-            if (availablePolls.length === 0) {
-                pollsHTML = '<p>No available polls to vote on!</p>';
-                document.getElementById('submitBtn').style.display = 'none';  // Hide submit button if no polls
-            } else {
-                availablePolls.forEach(poll => {
-                    pollsHTML += `<div class="card mb-4">
-                            <div class="card-header">${poll.pollTitle}</div>
-                            <div class="card-body">`;
-
-                    poll.options.forEach((option, index) => {
-                        pollsHTML += `
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="poll-${poll.pollId}" value="${index}" required>
-                                    <label class="form-check-label">${option}</label>
-                                </div>`;
-                    });
-
-                    pollsHTML += `</div></div>`;
-                });
-                document.getElementById('submitBtn').style.display = 'block';  // Show submit button if polls exist
-            }
-
-            document.getElementById('polls').innerHTML = pollsHTML;
+            fetch('http://localhost:3000/polls')
+                .then(response => response.json())
+                .then(polls => {
+                    let pollsHTML = '';
+                    if (polls.length === 0) {
+                        pollsHTML = '<p>No active polls right now!</p>';
+                    } else {
+                        polls.forEach(poll => {
+                            pollsHTML += `<div class="card mb-4">
+                                <div class="card-header">${poll.pollTitle}</div>
+                                <div class="card-body">
+                                    ${poll.options.map((option, index) => `
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="poll-${poll.pollId}" value="${index}" required>
+                                            <label class="form-check-label">${option}</label>
+                                        </div>`).join('')}
+                                </div></div>`;
+                        });
+                    }
+                    document.getElementById('polls').innerHTML = pollsHTML;
+                })
+                .catch(error => console.error('Error:', error));
         }
 
         displayPolls();
@@ -198,15 +191,19 @@
             });
 
             if (votedPollIds.length > 0) {
-                // Store the updated votes in localStorage
-                localStorage.setItem('polls', JSON.stringify(polls));
-
-                // Add all voted pollIds to the user's votedPolls list
-                const updatedVotedPolls = [...userVotedPolls, ...votedPollIds];
-                localStorage.setItem(`votedPolls-${loggedInUser.userId}`, JSON.stringify(updatedVotedPolls));
-
-                alert('Your votes have been submitted successfully!');
-                displayPolls();  // Refresh the polls to hide the voted polls
+                fetch('http://localhost:3000/vote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ pollId: poll.pollId, optionIndex: selectedOption.value }),
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        alert('Your votes have been submitted successfully!');
+                        displayPolls();  // Refresh the polls to hide the voted polls
+                    })
+                    .catch(error => console.error('Error:', error));
             } else {
                 alert('Please select an option to vote.');
             }

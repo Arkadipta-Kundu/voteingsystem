@@ -132,28 +132,26 @@
     <script>
         document.getElementById('loginForm').addEventListener('submit', function (event) {
             event.preventDefault();
-
             const userId = document.getElementById('userId').value;
             const password = document.getElementById('password').value;
 
-            // Check for admin login
-            if (userId === 'admin' && password === 'admin123') {
-                localStorage.setItem('loggedInUser', JSON.stringify({ userId: 'admin' }));
-                window.location.href = 'admin.html';
-                return;
-            }
-
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-
-            // Check user credentials
-            const user = users.find(user => user.userId === userId && user.password === password);
-
-            if (user) {
-                localStorage.setItem('loggedInUser', JSON.stringify(user));
-                window.location.href = 'voting.html';
-            } else {
-                alert('Invalid User ID or Password');
-            }
+            fetch('https://your-deployed-server-url.com/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId, password }),
+            })
+                .then(response => response.json())
+                .then(user => {
+                    if (user) {
+                        localStorage.setItem('loggedInUser', JSON.stringify(user));
+                        window.location.href = user.userId === 'admin' ? 'admin.html' : 'voting.html';
+                    } else {
+                        alert('Invalid User ID or Password');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         });
     </script>
 </body>
