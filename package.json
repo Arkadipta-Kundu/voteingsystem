@@ -4,7 +4,8 @@
   "description": "The **Online Voting System** is a web-based application designed to facilitate online polls and voting. This system allows users to register, log in, vote on polls, and view voting results. Admin users can manage polls and registered users, including creating, deleting polls, and editing user information. The application leverages HTML, CSS, and JavaScript with data stored in the browser's local storage.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
