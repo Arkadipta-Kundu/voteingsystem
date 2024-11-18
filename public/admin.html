@@ -215,7 +215,7 @@
             const options = Array.from(document.querySelectorAll('#pollOptions input')).map(input => input.value);
             const poll = { pollId: Date.now(), pollTitle, options, votes: Array(options.length).fill(0) };
 
-            fetch('https://your-deployed-server-url.com/createPoll', {
+            fetch('https://voteingsystem-production.up.railway.app/createPoll', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -232,7 +232,7 @@
 
         // Display existing polls
         function displayPolls() {
-            fetch('https://your-deployed-server-url.com/polls')
+            fetch('https://voteingsystem-production.up.railway.app/polls')
                 .then(response => response.json())
                 .then(polls => {
                     let pollListHTML = '';
@@ -254,7 +254,7 @@
 
         // Delete poll from localStorage
         function deletePoll(pollId) {
-            fetch(`https://your-deployed-server-url.com/deletePoll/${pollId}`, {
+            fetch(`https://voteingsystem-production.up.railway.app/deletePoll/${pollId}`, {
                 method: 'DELETE',
             })
                 .then(response => response.text())
